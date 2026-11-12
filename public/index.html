@@ -94,3 +94,35 @@
   </section>
 </main>
 
+<footer class="rodape">
+  <strong>LUMIÈRE</strong>
+  <span>Terça a sábado, 9h às 19h · Seus dados são protegidos conforme a LGPD</span>
+</footer>
+
+<!-- Área da equipe -->
+<dialog id="dlgEquipe">
+  <button class="fechar" id="fecharEquipe" aria-label="Fechar">×</button>
+
+  <div id="telaLogin">
+    <h3>Área da equipe</h3>
+    <label>Usuário<input id="loginUser" autocomplete="username"></label>
+    <label>Senha<input id="loginSenha" type="password" autocomplete="current-password"></label>
+    <button id="btnLogin" class="btn">Entrar</button>
+    <p id="msgLogin" class="msg" role="alert"></p>
+    <p class="dica">Demonstração: recepcao / 1234 · carla / 1234 · bia / 1234</p>
+  </div>
+
+  <div id="telaPainel" hidden>
+    <div class="painel-topo">
+      <h3 id="tituloPainel"></h3>
+      <button id="btnSair" class="btn-linha">Sair</button>
+    </div>
+    <label>Data<input id="dataPainel" type="date"></label>
+    <div id="tabelaAgenda"></div>
+  </div>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>
+
