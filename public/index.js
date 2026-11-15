@@ -40,3 +40,19 @@ const servicoPorId = id => SERVICOS.find(s => s.id === +id);
 const profPorId = id => PROFISSIONAIS.find(p => p.id === +id);
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
+function ler(chave, padrao) {
+  try { return JSON.parse(localStorage.getItem(chave)) ?? padrao; } catch { return padrao; }
+}
+function gravar(chave, valor) {
+  try { localStorage.setItem(chave, JSON.stringify(valor)); } catch { /* armazenamento indisponível */ }
+}
+const getAg = () => ler('lumiere_ag', []);
+const setAg = v => gravar('lumiere_ag', v);
+
+const ativo = a => a.status === 'agendado' || a.status === 'confirmado';
+const futuro = a => ativo(a) && instante(a.data, a.inicio) > Date.now();
+
+function msg(el, texto, tipo) {
+  el.textContent = texto;
+  el.className = 'msg ' + (tipo || '');
+}
