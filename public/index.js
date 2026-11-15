@@ -21,3 +21,7 @@ const USUARIOS = [
   { user: 'bia', senha: '1234', perfil: 'profissional', profId: 3, nome: 'Bia' }
 ];
 
+const ABRE = 9 * 60, FECHA = 19 * 60, PASSO = 30;
+const MAX_FUTUROS = 2;            // RN-05
+const LIMITE_TARDIO = 120;        // RN-03 (minutos)
+const DIAS_FUNC = [2, 3, 4, 5, 6]; // terça a sábado
