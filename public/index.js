@@ -25,3 +25,18 @@ const ABRE = 9 * 60, FECHA = 19 * 60, PASSO = 30;
 const MAX_FUTUROS = 2;            // RN-05
 const LIMITE_TARDIO = 120;        // RN-03 (minutos)
 const DIAS_FUNC = [2, 3, 4, 5, 6]; // terça a sábado
+
+/* ===== Utilitários ===== */
+const $ = id => document.getElementById(id);
+const brl = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const hhmm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+const soDigitos = s => (s || '').replace(/\D/g, '');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isoHoje = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const fmtData = iso => iso.split('-').reverse().join('/');
+const diaSemana = iso => new Date(iso + 'T00:00:00').getDay();
+const instante = (iso, min) => new Date(iso + 'T00:00:00').getTime() + min * 6e4;
+const servicoPorId = id => SERVICOS.find(s => s.id === +id);
+const profPorId = id => PROFISSIONAIS.find(p => p.id === +id);
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
