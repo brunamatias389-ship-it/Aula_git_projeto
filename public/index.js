@@ -15,3 +15,9 @@ const PROFISSIONAIS = [
   { id: 5, nome: 'Paulo', esp: 'cabeleireiro', ativo: false } 
 ];
 
+const USUARIOS = [
+  { user: 'recepcao', senha: '1234', perfil: 'recepcionista', nome: 'Recepção' },
+  { user: 'carla', senha: '1234', perfil: 'profissional', profId: 1, nome: 'Carla' },
+  { user: 'bia', senha: '1234', perfil: 'profissional', profId: 3, nome: 'Bia' }
+];
+
