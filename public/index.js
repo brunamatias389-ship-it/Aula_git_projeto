@@ -138,6 +138,13 @@ function agendar() {
   if (todos.filter(a => a.tel === tel && futuro(a)).length >= MAX_FUTUROS)
     return msg(out, `Cada cliente pode ter no máximo ${MAX_FUTUROS} agendamentos futuros ativos.`, 'erro');
 
+  const fim = slotEscolhido + s.dur;
+  if (todos.some(a => a.profId === profId && a.data === data && ativo(a) && slotEscolhido < a.fim && fim > a.inicio)) {
+    atualizarSlots();
+    return msg(out, 'Esse horário acabou de ser ocupado. Escolha outro.', 'erro');
+  }
+
+
 
 
 
