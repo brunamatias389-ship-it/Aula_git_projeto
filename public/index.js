@@ -174,6 +174,16 @@ function linhaAg(a, acoes) {
   </div>`;
 }
 
+function renderMeus() {
+  const tel = soDigitos($('telConsulta').value);
+  const box = $('meusAgendamentos');
+  if (tel.length < 10) { box.innerHTML = '<p class="dica">Informe o telefone usado no agendamento.</p>'; return; }
+  const lista = getAg().filter(a => a.tel === tel).sort((x, y) => instante(y.data, y.inicio) - instante(x.data, x.inicio));
+  box.innerHTML = lista.length
+    ? lista.map(a => linhaAg(a, { botoes: ativo(a) ? `<button class="btn-mini perigo" data-cancelar="${a.id}">Cancelar</button>` : '' })).join('')
+    : '<p class="dica">Nenhum agendamento encontrado.</p>';
+}
+
 
 
 
