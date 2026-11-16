@@ -125,6 +125,19 @@ function agendar() {
   if (slotEscolhido === null) return msg(out, 'Escolha um horário.', 'erro');
   if (!$('lgpd').checked) return msg(out, 'É necessário autorizar o uso dos dados (LGPD).', 'erro');
 
+  const clientes = ler('lumiere_cli', {});
+  const existente = clientes[tel];
+  clientes[tel] = {
+    nome: existente ? existente.nome : nome,
+    email: $('email').value.trim() || (existente && existente.email) || '',
+    nascimento: $('nascimento').value || (existente && existente.nascimento) || ''
+  };
+  gravar('lumiere_cli', clientes);
+
+  const todos = getAg();
+  if (todos.filter(a => a.tel === tel && futuro(a)).length >= MAX_FUTUROS)
+    return msg(out, `Cada cliente pode ter no máximo ${MAX_FUTUROS} agendamentos futuros ativos.`, 'erro');
+
 
 
 
