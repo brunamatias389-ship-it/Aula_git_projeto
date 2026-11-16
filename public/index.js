@@ -56,3 +56,12 @@ function msg(el, texto, tipo) {
   el.textContent = texto;
   el.className = 'msg ' + (tipo || '');
 }
+
+function renderVitrine() {
+  $('listaServicos').innerHTML = SERVICOS.map(s => `
+    <article class="card">
+      <span class="tag">${esc(s.esp)}</span>
+      <h3>${esc(s.nome)}</h3>
+      <p>${esc(s.desc)}</p>
+      <div class="meta"><span>${s.dur} min</span><span class="preco">${brl(s.valor)}</span></div>
+    </article>`).join('');
