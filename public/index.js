@@ -144,6 +144,18 @@ function agendar() {
     return msg(out, 'Esse horário acabou de ser ocupado. Escolha outro.', 'erro');
   }
 
+  todos.push({
+    id: Date.now(), nome: clientes[tel].nome, tel, servicoId: s.id, profId, data,
+    inicio: slotEscolhido, fim, status: 'agendado', tardio: false
+  });
+  setAg(todos);
+
+  msg(out, `Agendado! ${s.nome} com ${profPorId(profId).nome} em ${fmtData(data)}, das ${hhmm(slotEscolhido)} às ${hhmm(fim)}. Valor: ${brl(s.valor)}.`, 'ok');
+  atualizarSlots();
+}
+
+
+
 
 
 
