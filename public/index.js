@@ -165,6 +165,16 @@ function cancelar(id) {
   atualizarSlots();
 }
 
+function linhaAg(a, acoes) {
+  const s = servicoPorId(a.servicoId), p = profPorId(a.profId);
+  return `<div class="item">
+    <div><strong>${esc(s.nome)}</strong> com ${esc(p.nome)}<br>
+    <small>${fmtData(a.data)} · ${hhmm(a.inicio)}–${hhmm(a.fim)}${acoes.mostrarCliente ? ' · ' + esc(a.nome) + ' (' + esc(a.tel) + ')' : ''}</small></div>
+    <div><span class="status ${a.status}">${a.status}${a.tardio ? ' (tardio)' : ''}</span>${acoes.botoes || ''}</div>
+  </div>`;
+}
+
+
 
 
 
