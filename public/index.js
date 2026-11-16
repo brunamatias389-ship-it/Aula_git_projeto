@@ -249,6 +249,29 @@ function sair() {
   $('telaLogin').hidden = false;
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  renderVitrine();
+
+  $('servico').innerHTML = SERVICOS.map(s => `<option value="${s.id}">${esc(s.nome)}</option>`).join('');
+  atualizarProfissionais();
+
+  const hoje = isoHoje();
+  $('data').min = hoje;
+  $('nascimento').max = hoje;
+
+  $('servico').addEventListener('change', () => { atualizarProfissionais(); atualizarSlots(); });
+  $('profissional').addEventListener('change', atualizarSlots);
+  $('data').addEventListener('change', atualizarSlots);
+
+  $('slots').addEventListener('click', e => {
+    const b = e.target.closest('.slot');
+    if (!b) return;
+    document.querySelectorAll('.slot').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel');
+    slotEscolhido = +b.dataset.min;
+  });
+
+
 
 
 
