@@ -97,5 +97,19 @@ function atualizarProfissionais() {
   $('infoServico').textContent = `${s.nome}: ${s.dur} minutos · ${brl(s.valor)}`;
 }
 
+function atualizarSlots() {
+  slotEscolhido = null;
+  const box = $('slots');
+  const data = $('data').value;
+  if (!data) { box.innerHTML = '<p class="dica">Escolha serviço, profissional e data.</p>'; return; }
+  if (!DIAS_FUNC.includes(diaSemana(data))) {
+    box.innerHTML = '<p class="dica">Atendemos de terça a sábado. Escolha outra data.</p>'; return;
+  }
+  const s = servicoPorId($('servico').value);
+  const livres = horariosLivres($('profissional').value, data, s.dur);
+  if (!livres.length) { box.innerHTML = '<p class="dica">Sem horários livres nesta data.</p>'; return; }
+  box.innerHTML = livres.map(m => `<button type="button" class="slot" data-min="${m}">${hhmm(m)}</button>`).join('');
+}
+
 
 
