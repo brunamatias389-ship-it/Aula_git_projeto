@@ -214,6 +214,42 @@ function login() {
   renderPainel();
 }
 
+function renderPainel() {
+  if (!sessao) return;
+  const data = $('dataPainel').value;
+  let lista = getAg().filter(a => a.data === data);
+  if (sessao.perfil === 'profissional') lista = lista.filter(a => a.profId === sessao.profId);
+  lista.sort((x, y) => x.inicio - y.inicio);
+  $('tabelaAgenda').innerHTML = lista.length ? lista.map(a => {
+    let b = '';
+    if (sessao.perfil === 'recepcionista') {
+      if (a.status === 'agendado') b += `<button class="btn-mini" data-confirmar="${a.id}">Confirmar presença</button>`;
+      if (ativo(a)) b += `<button class="btn-mini perigo" data-cancelar="${a.id}">Cancelar</button>`;
+    } else if (a.status === 'confirmado') {
+      b += `<button class="btn-mini" data-realizado="${a.id}">Registrar atendimento</button>`;
+    }
+    return linhaAg(a, { mostrarCliente: true, botoes: b });
+  }).join('') : '<p class="dica">Sem agendamentos nesta data.</p>';
+}
+
+function mudarStatus(id, novo) {
+  const todos = getAg();
+  const a = todos.find(x => x.id === id);
+  if (!a) return;
+  if (novo === 'realizado' && a.status !== 'confirmado') return; // RN-07
+  if (novo === 'confirmado' && a.status !== 'agendado') return;
+  a.status = novo;
+  setAg(todos);
+  renderPainel();
+}
+
+function sair() {
+  sessao = null;
+  $('telaPainel').hidden = true;
+  $('telaLogin').hidden = false;
+}
+
+
 
 
 
