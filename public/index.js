@@ -271,6 +271,28 @@ document.addEventListener('DOMContentLoaded', () => {
     slotEscolhido = +b.dataset.min;
   });
 
+   $('btnAgendar').addEventListener('click', agendar);
+  $('btnConsultar').addEventListener('click', renderMeus);
+
+  document.body.addEventListener('click', e => {
+    const c = e.target.closest('[data-cancelar]');
+    if (c) { cancelar(+c.dataset.cancelar); renderMeus(); renderPainel(); }
+    const k = e.target.closest('[data-confirmar]');
+    if (k) mudarStatus(+k.dataset.confirmar, 'confirmado');
+    const r = e.target.closest('[data-realizado]');
+    if (r) mudarStatus(+r.dataset.realizado, 'realizado');
+  });
+
+  const dlg = $('dlgEquipe');
+  $('btnEquipe').addEventListener('click', () => dlg.showModal());
+  $('fecharEquipe').addEventListener('click', () => dlg.close());
+  $('btnLogin').addEventListener('click', login);
+  $('loginSenha').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  $('btnSair').addEventListener('click', sair);
+  $('dataPainel').addEventListener('change', renderPainel);
+});
+
+
 
 
 
