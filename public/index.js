@@ -154,6 +154,16 @@ function agendar() {
   atualizarSlots();
 }
 
+function cancelar(id) {
+  const todos = getAg();
+  const a = todos.find(x => x.id === id);
+  if (!a || !ativo(a)) return;
+  if (!confirm('Deseja cancelar este agendamento?')) return;
+  a.tardio = instante(a.data, a.inicio) - Date.now() < LIMITE_TARDIO * 6e4;
+  a.status = 'cancelado';
+  setAg(todos);
+  atualizarSlots();
+}
 
 
 
