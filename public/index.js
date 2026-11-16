@@ -65,3 +65,12 @@ function renderVitrine() {
       <p>${esc(s.desc)}</p>
       <div class="meta"><span>${s.dur} min</span><span class="preco">${brl(s.valor)}</span></div>
     </article>`).join('');
+
+    $('listaProfs').innerHTML = PROFISSIONAIS.filter(p => p.ativo).map(p => `
+    <article class="card">
+      <span class="tag">${esc(p.esp)}</span>
+      <h3>${esc(p.nome)}</h3>
+    </article>`).join('');
+}
+
+
