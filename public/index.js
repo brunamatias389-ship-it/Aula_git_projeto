@@ -73,4 +73,29 @@ function renderVitrine() {
     </article>`).join('');
 }
 
+function horariosLivres(profId, data, dur) {
+  const prof = profPorId(profId);
+  if (!prof || !prof.ativo) return [];
+  if (!DIAS_FUNC.includes(diaSemana(data))) return [];
+  const ocupados = getAg().filter(a => a.profId === prof.id && a.data === data && ativo(a));
+  const livres = [];
+  for (let ini = ABRE; ini + dur <= FECHA; ini += PASSO) {
+    const fim = ini + dur;
+    if (instante(data, ini) <= Date.now()) continue;
+    if (ocupados.some(o => ini < o.fim && fim > o.inicio)) continue;
+    livres.push(ini);
+  }
+  return livres;
+}
+
+let slotEscolhido = null;
+
+function atualizarProfissionais() {
+  const s = servicoPorId($('servico').value);
+  const opcoes = PROFISSIONAIS.filter(p => p.ativo && p.esp === s.esp);
+  $('profissional').innerHTML = opcoes.map(p => `<option value="${p.id}">${esc(p.nome)}</option>`).join('');
+  $('infoServico').textContent = `${s.nome}: ${s.dur} minutos · ${brl(s.valor)}`;
+}
+
+
 
