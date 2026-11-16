@@ -184,6 +184,36 @@ function renderMeus() {
     : '<p class="dica">Nenhum agendamento encontrado.</p>';
 }
 
+let sessao = null;
+
+function login() {
+  const out = $('msgLogin');
+  const bloqueio = ler('lumiere_bloqueio', 0);
+  if (Date.now() < bloqueio) {
+    return msg(out, `Conta bloqueada. Tente novamente em ${Math.ceil((bloqueio - Date.now()) / 60000)} min.`, 'erro');
+  }
+  const u = USUARIOS.find(x => x.user === $('loginUser').value.trim().toLowerCase() && x.senha === $('loginSenha').value);
+  if (!u) {
+    const n = ler('lumiere_tentativas', 0) + 1;
+    gravar('lumiere_tentativas', n);
+    if (n >= 3) {
+      gravar('lumiere_bloqueio', Date.now() + 15 * 60000);
+      gravar('lumiere_tentativas', 0);
+      return msg(out, 'Três tentativas falhas. Conta bloqueada por 15 minutos.', 'erro');
+    }
+    return msg(out, `Credenciais inválidas. Tentativa ${n} de 3.`, 'erro');
+  }
+  gravar('lumiere_tentativas', 0);
+  sessao = u;
+  msg(out, '');
+  $('loginSenha').value = '';
+  $('telaLogin').hidden = true;
+  $('telaPainel').hidden = false;
+  $('tituloPainel').textContent = u.perfil === 'recepcionista' ? 'Agenda geral' : `Agenda de ${u.nome}`;
+  $('dataPainel').value = isoHoje();
+  renderPainel();
+}
+
 
 
 
