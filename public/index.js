@@ -111,5 +111,21 @@ function atualizarSlots() {
   box.innerHTML = livres.map(m => `<button type="button" class="slot" data-min="${m}">${hhmm(m)}</button>`).join('');
 }
 
+function agendar() {
+  const out = $('msgAgendar');
+  const nome = $('nome').value.trim();
+  const tel = soDigitos($('telefone').value);
+  const data = $('data').value;
+  const s = servicoPorId($('servico').value);
+  const profId = +$('profissional').value;
+
+  if (!nome || !tel) return msg(out, 'Informe nome e telefone.', 'erro');
+  if (tel.length < 10 || tel.length > 11) return msg(out, 'Telefone inválido. Informe o DDD e o número.', 'erro');
+  if (!data) return msg(out, 'Escolha a data.', 'erro');
+  if (slotEscolhido === null) return msg(out, 'Escolha um horário.', 'erro');
+  if (!$('lgpd').checked) return msg(out, 'É necessário autorizar o uso dos dados (LGPD).', 'erro');
+
+
+
 
 
