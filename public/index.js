@@ -210,7 +210,22 @@ function login() {
   $('telaLogin').hidden = true;
   $('telaPainel').hidden = false;
   $('tituloPainel').textContent = u.perfil === 'recepcionista' ? 'Agenda geral' : `Agenda de ${u.nome}`;
-  $('dataPainel').value = isoHoje();
+  
+  const hoje = isoHoje();
+  let dataInicial = hoje;
+  
+  if (u.perfil === 'profissional') {
+    const todos = getAg().filter(a => a.profId === u.profId && ativo(a));
+    const futuros = todos.filter(a => a.data >= hoje).map(a => a.data);
+    futuros.sort(); 
+    
+    if (futuros.length > 0 && futuros[0] > hoje) {
+      dataInicial = futuros[0];
+    }
+  }
+  
+  $('dataPainel').value = dataInicial;
+
   renderPainel();
 }
 
