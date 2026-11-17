@@ -227,6 +227,7 @@ function login() {
   $('dataPainel').value = dataInicial;
 
   renderPainel();
+    if (u.perfil === 'recepcionista') abrirPainelRecepcao();
 }
 
 function renderPainel() {
@@ -245,6 +246,7 @@ function renderPainel() {
     }
     return linhaAg(a, { mostrarCliente: true, botoes: b });
   }).join('') : '<p class="dica">Sem agendamentos nesta data.</p>';
+    if (sessao.perfil === 'recepcionista') renderRecepcao();
 }
 
 function mudarStatus(id, novo) {
@@ -307,6 +309,162 @@ document.addEventListener('DOMContentLoaded', () => {
   $('dataPainel').addEventListener('change', renderPainel);
 });
 
+const DIAS_NOME = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+let agAberto = null; // agendamento com detalhes abertos
+
+const somarDias = (iso, n) => {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+};
+
+function limitesSemana(hoje) {
+  const dow = diaSemana(hoje);
+  const ini = somarDias(hoje, dow === 0 ? -6 : 1 - dow);
+  return [ini, somarDias(ini, 6)];
+}
+
+function rotuloData(iso, hoje) {
+  const nome = DIAS_NOME[diaSemana(iso)];
+  if (iso === hoje) return `Hoje · ${fmtData(iso).slice(0, 5)} · ${nome}`;
+  if (iso === somarDias(hoje, 1)) return `Amanhã · ${fmtData(iso).slice(0, 5)} · ${nome}`;
+  return `${iso < hoje ? fmtData(iso) : fmtData(iso).slice(0, 5)} · ${nome}`;
+}
+
+function detalheAg(a, s, p) {
+  const cli = ler('lumiere_cli', {})[a.tel] || {};
+  let b = '';
+  if (a.status === 'agendado') b += `<button class="btn-mini" data-confirmar="${a.id}">Confirmar presença</button>`;
+  if (ativo(a)) b += `<button class="btn-mini perigo" data-cancelar="${a.id}">Cancelar</button>`;
+  return `<div class="ag-det">
+    <dl>
+      <div><dt>Telefone</dt><dd>${esc(a.tel)}</dd></div>
+      <div><dt>E-mail</dt><dd>${esc(cli.email || '—')}</dd></div>
+      <div><dt>Nascimento</dt><dd>${cli.nascimento ? fmtData(cli.nascimento) : '—'}</dd></div>
+      <div><dt>Data e horário</dt><dd>${fmtData(a.data)} · ${hhmm(a.inicio)}–${hhmm(a.fim)}</dd></div>
+      <div><dt>Serviço</dt><dd>${esc(s.nome)} · ${s.dur} min · ${brl(s.valor)}</dd></div>
+      <div><dt>Profissional</dt><dd>${esc(p.nome)}</dd></div>
+    </dl>
+    <div class="ag-acoes">${b}</div>
+  </div>`;
+}
+
+function linhaRecepcao(a) {
+  const s = servicoPorId(a.servicoId), p = profPorId(a.profId);
+  const aberto = agAberto === a.id;
+  return `<div class="ag ${aberto ? 'aberto' : ''}">
+    <button type="button" class="ag-linha" data-detalhe="${a.id}" aria-expanded="${aberto}">
+      <span class="ag-hora">${hhmm(a.inicio)}</span>
+      <span class="ag-cli"><strong>${esc(a.nome)}</strong><small>${esc(s.nome)}</small></span>
+      <span class="ag-prof">${esc(p.nome)}</span>
+      <span class="status ${a.status}">${a.status}${a.tardio ? ' (tardio)' : ''}</span>
+    </button>
+    ${aberto ? detalheAg(a, s, p) : ''}
+  </div>`;
+}
+
+function renderRecepcao() {
+  if (!sessao || sessao.perfil !== 'recepcionista') return;
+  const hoje = isoHoje();
+  const todos = getAg();
+  const [semIni, semFim] = limitesSemana(hoje);
+  const limite7 = somarDias(hoje, 7);
+
+  $('kpiHoje').textContent = todos.filter(a => ativo(a) && a.data === hoje).length;
+  $('kpiProximos').textContent = todos.filter(a => futuro(a) && a.data <= limite7).length;
+  $('kpiSemana').textContent = todos.filter(a => ativo(a) && a.data >= semIni && a.data <= semFim).length;
+  $('kpiFuturos').textContent = todos.filter(futuro).length;
+
+  const periodo = $('filtroPeriodo').value, dataSel = $('filtroData').value;
+  const prof = $('filtroProf').value, st = $('filtroStatus').value;
+  const busca = $('filtroBusca').value.trim().toLowerCase();
+  const buscaTel = soDigitos(busca);
+
+  const lista = todos.filter(a => {
+    if (dataSel) { if (a.data !== dataSel) return false; }
+    else if (periodo === 'hoje') { if (a.data !== hoje) return false; }
+    else if (periodo === 'semana') { if (a.data < semIni || a.data > semFim) return false; }
+    else if (periodo === 'proximos') { if (a.data < hoje) return false; }
+    if (prof && a.profId !== +prof) return false;
+    if (st === 'ativos' && !ativo(a)) return false;
+    if (busca && !(a.nome.toLowerCase().includes(busca) || (buscaTel && a.tel.includes(buscaTel)))) return false;
+    return true;
+  }).sort((x, y) => x.data.localeCompare(y.data) || x.inicio - y.inicio);
+
+  const grupos = {};
+  lista.forEach(a => (grupos[a.data] = grupos[a.data] || []).push(a));
+  const datas = Object.keys(grupos).sort();
+  const ordem = datas.filter(d => d >= hoje).concat(datas.filter(d => d < hoje).reverse());
+
+  $('listaRecepcao').innerHTML = ordem.length
+    ? ordem.map(d => `<section class="dia">
+        <h4>${rotuloData(d, hoje)} <span>${grupos[d].length} agendamento(s)</span></h4>
+        ${grupos[d].map(linhaRecepcao).join('')}
+      </section>`).join('')
+    : '<p class="dica">Nenhum agendamento encontrado com esses filtros.</p>';
+}
+
+function limparFiltros() {
+  $('filtroPeriodo').value = 'proximos';
+  $('filtroData').value = '';
+  $('filtroProf').value = '';
+  $('filtroStatus').value = 'ativos';
+  $('filtroBusca').value = '';
+  renderRecepcao();
+}
+
+function mostrarPainelRecepcao() {
+  $('telaPainel').hidden = true;
+  $('telaRecepcao').hidden = false;
+  $('btnVoltarPainel').hidden = true;
+  $('dlgEquipe').classList.add('amplo');
+  renderRecepcao();
+}
+
+function abrirPainelRecepcao() {
+  $('filtroProf').innerHTML = '<option value="">Todos os profissionais</option>' +
+    PROFISSIONAIS.filter(p => p.ativo).map(p => `<option value="${p.id}">${esc(p.nome)}</option>`).join('');
+  agAberto = null;
+  mostrarPainelRecepcao();
+  limparFiltros();
+}
+
+function limparRecepcao() {
+  $('telaRecepcao').hidden = true;
+  $('btnVoltarPainel').hidden = true;
+  $('dlgEquipe').classList.remove('amplo');
+  agAberto = null;
+}
+
+function iniciarPainelRecepcao() {
+  ['filtroPeriodo', 'filtroData', 'filtroProf', 'filtroStatus'].forEach(id => $(id).addEventListener('change', renderRecepcao));
+  $('filtroBusca').addEventListener('input', renderRecepcao);
+  $('btnLimparFiltros').addEventListener('click', limparFiltros);
+
+  $('listaRecepcao').addEventListener('click', e => {
+    const d = e.target.closest('[data-detalhe]');
+    if (!d) return;
+    const id = +d.dataset.detalhe;
+    agAberto = agAberto === id ? null : id;
+    renderRecepcao();
+  });
+
+  $('btnCalendario').addEventListener('click', () => {
+    $('telaRecepcao').hidden = true;
+    $('telaPainel').hidden = false;
+    $('btnVoltarPainel').hidden = false;
+    $('dlgEquipe').classList.remove('amplo');
+    renderPainel();
+  });
+  $('btnVoltarPainel').addEventListener('click', mostrarPainelRecepcao);
+
+  $('btnSairRecep').addEventListener('click', () => { sair(); limparRecepcao(); });
+  $('btnSair').addEventListener('click', limparRecepcao);
+
+  $('btnEquipe').addEventListener('click', renderRecepcao);
+  window.addEventListener('storage', e => { if (e.key === 'lumiere_ag') renderRecepcao(); });
+}
+document.addEventListener('DOMContentLoaded', iniciarPainelRecepcao);
 
 
 
