@@ -115,10 +115,59 @@
   <div id="telaPainel" hidden>
     <div class="painel-topo">
       <h3 id="tituloPainel"></h3>
-      <button id="btnSair" class="btn-linha">Sair</button>
+            <div>
+        <button id="btnVoltarPainel" class="btn-linha" hidden>← Painel</button>
+        <button id="btnSair" class="btn-linha">Sair</button>
+      </div>
     </div>
     <label>Data<input id="dataPainel" type="date"></label>
     <div id="tabelaAgenda"></div>
+  </div>
+    
+  <div id="telaRecepcao" hidden>
+    <div class="painel-topo">
+      <h3>Painel de agendamentos</h3>
+      <div>
+        <button id="btnCalendario" class="btn-linha">Calendário</button>
+        <button id="btnSairRecep" class="btn-linha">Sair</button>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><span id="kpiHoje">0</span><small>Hoje</small></div>
+      <div class="kpi"><span id="kpiProximos">0</span><small>Próximos 7 dias</small></div>
+      <div class="kpi"><span id="kpiSemana">0</span><small>Esta semana</small></div>
+      <div class="kpi"><span id="kpiFuturos">0</span><small>Total futuros</small></div>
+    </div>
+
+    <div class="filtros">
+      <label>Período
+        <select id="filtroPeriodo">
+          <option value="proximos">Hoje e próximos dias</option>
+          <option value="hoje">Somente hoje</option>
+          <option value="semana">Esta semana</option>
+          <option value="todos">Todos (inclui passados)</option>
+        </select>
+      </label>
+      <label>Data
+        <input id="filtroData" type="date">
+      </label>
+      <label>Profissional
+        <select id="filtroProf"></select>
+      </label>
+      <label>Status
+        <select id="filtroStatus">
+          <option value="ativos">Agendados e confirmados</option>
+          <option value="todos">Todos (inclui cancelados)</option>
+        </select>
+      </label>
+      <label>Buscar cliente
+        <input id="filtroBusca" type="search" placeholder="Nome ou telefone">
+      </label>
+    </div>
+    <button id="btnLimparFiltros" class="btn-mini" type="button">Limpar filtros</button>
+
+    <div id="listaRecepcao"></div>
   </div>
 </dialog>
 
