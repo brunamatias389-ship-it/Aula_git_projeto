@@ -88,3 +88,32 @@ dialog label{margin-bottom:12px}
   .secao{padding:56px 5vw}
   .cartao{padding:22px}
 }
+
+dialog.amplo{max-width:1100px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.kpi{background:#fff;border:1px solid var(--linha);border-top:3px solid var(--ouro);padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.kpi span{font-family:var(--serif);font-size:2.4rem;font-weight:600;line-height:1}
+.kpi small{font-size:.74rem;text-transform:uppercase;letter-spacing:.12em;color:var(--suave)}
+.filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:10px}
+.filtros label{margin-bottom:0}
+#btnLimparFiltros{margin-left:0}
+.dia{margin-top:24px}
+.dia h4{font-family:var(--serif);font-size:1.3rem;font-weight:600;padding-bottom:6px;border-bottom:1px solid var(--ouro);display:flex;justify-content:space-between;align-items:baseline}
+.dia h4 span{font:400 .78rem var(--sans);color:var(--suave);letter-spacing:.08em}
+.ag{background:#fff;border:1px solid var(--linha);margin-top:8px}
+.ag-linha{display:grid;grid-template-columns:72px 1fr 140px 150px;gap:12px;align-items:center;width:100%;padding:12px 16px;background:none;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.ag-linha:hover,.ag.aberto .ag-linha{background:var(--creme)}
+.ag-hora{font-family:var(--serif);font-size:1.45rem;font-weight:600;color:var(--ouro-esc)}
+.ag-cli{display:flex;flex-direction:column}
+.ag-cli small{color:var(--suave)}
+.ag-linha .status{justify-self:end}
+.ag-det{border-top:1px solid var(--linha);padding:16px;background:var(--creme)}
+.ag-det dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.ag-det dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--suave)}
+.ag-acoes{margin-top:14px}
+.ag-acoes .btn-mini{margin-left:0;margin-right:6px}
+@media(max-width:640px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .ag-linha{grid-template-columns:62px 1fr}
+  .ag-prof,.ag-linha .status{grid-column:2;justify-self:start}
+}
